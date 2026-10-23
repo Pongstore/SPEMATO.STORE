@@ -38,9 +38,9 @@ app.post('/api/preorder', async (req, res) => {
         `;
 
         // ផ្ញើទៅ Telegram
-        const telegramUrl = `https://api.telegram.org/bot${process.env.TELEGRAM_BOT_TOKEN}/sendMessage`;
+        const telegramUrl = `https://api.telegram.org/bot${process.env.8733104653:AAH7zdDv0HmkEeWW11I5P9mUkL0sf1UKPBk}/sendMessage`;
         const response = await axios.post(telegramUrl, {
-            chat_id: process.env.TELEGRAM_CHAT_ID,
+            chat_id: process.env.1323988810,
             text: receiptMessage,
             parse_mode: 'Markdown'
         });
