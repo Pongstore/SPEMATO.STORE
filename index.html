@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="km">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SPEMATO - Pre-order Rerolls</title>
+    <link href="https://fonts.googleapis.com/css2?family=Battambang:wght@400;700&family=Orbitron:wght@700&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-dark: #0a1128;
+            --card-bg: #111a3a;
+            --primary-blue: #2563eb;
+            --accent-yellow: #fbbf24;
+            --text-light: #e2e8f0;
+            --border-color: #1e2d5a;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: 'Inter', 'Battambang', sans-serif;
+            display: flex;
+            justify-content: center;
+            min-height: 100vh;
+            scroll-behavior: smooth;
+            padding: 10px;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 10px 0;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .header { text-align: center; margin-top: 10px; }
+
+        .logo {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            background: linear-gradient(to bottom, #ffffff, #8892b0);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(136, 146, 176, 0.5);
+        }
+
+        .subtitle { font-size: 14px; color: #a0aec0; margin: 5px 0 15px 0; }
+
+        .badge {
+            display: inline-block;
+            background-color: var(--accent-yellow);
+            color: #000;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 14px;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.3);
+        }
+
+        .card {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 20px;
+            position: relative;
+        }
+
+        .step-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .step-number {
+            background-color: var(--primary-blue);
+            color: white;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 12px;
+        }
+
+        .roll-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .roll-option {
+            background-color: #0d1530;
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 15px 10px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            transition: all 0.2s ease;
+        }
+
+        .roll-option:hover { border-color: #3b82f6; }
+
+        .roll-option.active {
+            border-color: var(--accent-yellow);
+            background-color: #1a2547;
+            box-shadow: 0 0 15px rgba(251, 191, 36, 0.2);
+        }
+
+        .check-icon {
+            display: none;
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background-color: var(--accent-yellow);
+            color: #000;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            font-size: 12px;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        .roll-option.active .check-icon { display: flex; }
+
+        .roll-amount { font-size: 24px; font-weight: 700; color: white; font-family: 'Orbitron', sans-serif; }
+        .roll-label { font-size: 12px; color: #a0aec0; margin-bottom: 8px; }
+        .roll-price { color: var(--accent-yellow); font-weight: bold; font-size: 16px; }
+
+        .hot-tag {
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background-color: #f43f5e;
+            color: white;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: bold;
+        }
+
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 14px; margin-bottom: 8px; font-weight: bold; }
+
+        .form-group input {
+            width: 100%;
+            background-color: #0d1530;
+            border: 1px solid var(--border-color);
+            color: white;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+            font-family: 'Inter', 'Battambang', sans-serif;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus { border-color: var(--primary-blue); }
+
+        .total-box {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #0d1530;
+            border: 1px dashed var(--border-color);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .total-price { color: var(--accent-yellow); font-size: 18px; }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(90deg, #4f46e5, #3b82f6);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            font-family: 'Battambang', sans-serif;
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.4);
+            transition: 0.3s;
+        }
+
+        .submit-btn:hover { opacity: 0.95; transform: translateY(-1px); }
+        .submit-btn:disabled { background: #334155; cursor: not-allowed; box-shadow: none; transform: none; }
+
+        .footer-text { text-align: center; font-size: 12px; color: #a0aec0; margin-top: 15px; }
+
+        #successView { display: none; padding-top: 10px; }
+        .success-content { text-align: center; }
+
+        .success-icon {
+            width: 80px;
+            height: 80px;
+            background-color: #10b981;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 0 auto 20px auto;
+            font-size: 40px;
+            color: white;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .success-title { font-family: 'Battambang', sans-serif; margin-bottom: 10px; font-size: 24px; }
+        .success-desc { color: #a0aec0; font-size: 14px; margin-bottom: 20px; line-height: 1.6; }
+
+        .receipt-box {
+            background-color: #0d1530;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: left;
+            margin: 20px 0;
+            box-shadow: inset 0 0 10px rgba(0,0,0,0.2);
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            font-size: 14px;
+            border-bottom: 1px dashed rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+        
+        .receipt-row:last-child { border-bottom: none; margin-bottom: 0; padding-bottom: 0; }
+        .receipt-row span:first-child { color: #a0aec0; }
+        .receipt-row span:last-child { font-weight: bold; text-align: right; word-break: break-all; }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-light);
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Battambang', sans-serif;
+            transition: 0.3s;
+        }
+        
+        .reset-btn:hover { background: rgba(255,255,255,0.05); }
+        
+        .warning-text {
+            color: #ef4444;
+            font-size: 13px;
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            line-height: 1.5;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        
+        <!-- Form View -->
+        <div id="formView">
+            <div class="header">
+                <div class="logo">SPEMATO</div>
+                <div class="subtitle">ទិញ Rerolls បែប Pre-order – លឿន ងាយស្រួល ទុកចិត្តបាន</div>
+                <div class="badge">🔥 PRE-ORDER កំពុងបើក</div>
+            </div>
+
+            <div class="card">
+                <div class="step-title">
+                    <div class="step-number">1</div>
+                    ជ្រើសរើសកញ្ចប់ Rerolls
+                </div>
+
+                <div class="roll-grid" id="rollGrid">
+                    <div class="roll-option active" data-price="1.50" data-rolls="50">
+                        <div class="check-icon">✓</div>
+                        <div class="roll-amount">50</div>
+                        <div class="roll-label">Rolls</div>
+                        <div class="roll-price">$1.50</div>
+                    </div>
+                    <div class="roll-option" data-price="3.00" data-rolls="100">
+                        <div class="check-icon">✓</div>
+                        <div class="roll-amount">100</div>
+                        <div class="roll-label">Rolls</div>
+                        <div class="roll-price">$3.00</div>
+                    </div>
+                    <div class="roll-option" data-price="9.99" data-rolls="500">
+                        <div class="hot-tag">លក់ដាច់</div>
+                        <div class="check-icon">✓</div>
+                        <div class="roll-amount">500</div>
+                        <div class="roll-label">Rolls</div>
+                        <div class="roll-price">$9.99</div>
+                    </div>
+                    <div class="roll-option" data-price="19.50" data-rolls="1000">
+                        <div class="check-icon">✓</div>
+                        <div class="roll-amount">1000</div>
+                        <div class="roll-label">Rolls</div>
+                        <div class="roll-price">$19.50</div>
+                    </div>
+                </div>
+
+                <div class="step-title">
+                    <div class="step-number">2</div>
+                    ព័ត៌មានរបស់អ្នក
+                </div>
+
+                <div class="form-group">
+                    <label>ឈ្មោះអ្នកប្រើប្រាស់ (Username)</label>
+                    <input type="text" id="robloxUser" placeholder="ឧ. Roblox username របស់អ្នក">
+                </div>
+
+                <div class="form-group">
+                    <label>លេខទូរស័ព្ទ Telegram</label>
+                    <input type="text" id="tgPhone" placeholder="ឧ. +855 12 345 678">
+                </div>
+
+                <div class="form-group">
+                    <label>Username Telegram</label>
+                    <input type="text" id="tgUser" placeholder="@yourusername">
+                </div>
+
+                <div class="total-box">
+                    <span>សរុបត្រូវបង់</span>
+                    <span class="total-price" id="displayPrice">$1.50</span>
+                </div>
+
+                <button class="submit-btn" id="submitBtn" onclick="submitOrder()">
+                    🛒 Pre-order ឥឡូវនេះ
+                </button>
+
+                <div class="footer-text">
+                    យើងនឹងទាក់ទងអ្នកតាម Telegram ដើម្បីបញ្ជាក់ការបង់ប្រាក់។
+                </div>
+            </div>
+        </div>
+
+        <!-- Success View -->
+        <div id="successView">
+            <div class="header">
+                <div class="logo">SPEMATO</div>
+                <div class="subtitle">ទិញ Rerolls បែប Pre-order – លឿន ងាយស្រួល ទុកចិត្តបាន</div>
+                <div class="badge">🔥 PRE-ORDER កំពុងបើក</div>
+            </div>
+
+            <div class="card">
+                <div class="success-content">
+                    <div class="success-icon">✓</div>
+                    <h2 class="success-title">Pre-order ជោគជ័យ! 🎉</h2>
+                    <p class="success-desc">
+                        សូមអរគុណ! ការបញ្ជាទិញរបស់អ្នកត្រូវបានផ្ញើរួចរាល់។<br>យើងនឹងទាក់ទងអ្នកតាម Telegram ក្នុងពេលឆាប់ៗនេះ។
+                    </p>
+
+                    <div class="receipt-box">
+                        <div class="receipt-row">
+                            <span>កញ្ចប់</span>
+                            <span id="rcRolls">50 Rolls</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>តម្លៃ</span>
+                            <span id="rcPrice" style="color: var(--accent-yellow);">$1.50</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Username</span>
+                            <span id="rcUser">...</span>
+                        </div>
+                        <div class="receipt-row">
+                            <span>Telegram</span>
+                            <span id="rcTg">...</span>
+                        </div>
+                    </div>
+
+                    <button class="reset-btn" onclick="resetForm()">
+                        បញ្ជាទិញម្តងទៀត
+                    </button>
+
+                    <div id="errorMsg" class="warning-text">
+                        ⚠️ មានបញ្ហាក្នុងការផ្ញើសារ! សូមប្រាកដថា Server ដំណើរការ ឬ Token ត្រឹមត្រូវ។
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        let currentPrice = '1.50';
+        let currentRolls = '50';
+
+        const rollOptions = document.querySelectorAll('.roll-option');
+        rollOptions.forEach(option => {
+            option.addEventListener('click', function() {
+                rollOptions.forEach(opt => opt.classList.remove('active'));
+                this.classList.add('active');
+
+                currentPrice = parseFloat(this.getAttribute('data-price')).toFixed(2);
+                currentRolls = this.getAttribute('data-rolls');
+
+                document.getElementById('displayPrice').innerText = `$${currentPrice}`;
+            });
+        });
+
+        async function submitOrder() {
+            const btn = document.getElementById('submitBtn');
+            const robloxUser = document.getElementById('robloxUser').value.trim();
+            const tgPhone = document.getElementById('tgPhone').value.trim();
+            const tgUser = document.getElementById('tgUser').value.trim();
+
+            if (!robloxUser || !tgUser) {
+                alert('សូមបំពេញ Username Roblox និង Username Telegram!');
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ កំពុងផ្ញើ...';
+
+            try {
+                // ផ្ញើទៅកាន់ Backend របស់យើង
+                const response = await fetch('/api/preorder', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        robloxUser,
+                        tgPhone,
+                        tgUser,
+                        currentRolls,
+                        currentPrice
+                    })
+                });
+
+                const data = await response.json();
+
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+
+                document.getElementById('rcRolls').innerText = `${currentRolls} Rolls`;
+                document.getElementById('rcPrice').innerText = `$${currentPrice}`;
+                document.getElementById('rcUser').innerText = robloxUser;
+                document.getElementById('rcTg').innerText = tgUser;
+
+                if (data.ok) {
+                    document.getElementById('errorMsg').style.display = 'none';
+                } else {
+                    document.getElementById('errorMsg').style.display = 'block';
+                }
+
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+
+            } catch (error) {
+                console.error("Submission Error:", error);
+                // បង្ហាញ Error បើភ្ជាប់ទៅ Server មិនបាន
+                document.getElementById('formView').style.display = 'none';
+                document.getElementById('successView').style.display = 'block';
+                
+                document.getElementById('rcRolls').innerText = `${currentRolls} Rolls`;
+                document.getElementById('rcPrice').innerText = `$${currentPrice}`;
+                document.getElementById('rcUser').innerText = robloxUser;
+                document.getElementById('rcTg').innerText = tgUser;
+                
+                document.getElementById('errorMsg').style.display = 'block';
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } finally {
+                btn.disabled = false;
+                btn.innerHTML = '🛒 Pre-order ឥឡូវនេះ';
+            }
+        }
+
+        function resetForm() {
+            document.getElementById('robloxUser').value = '';
+            document.getElementById('tgPhone').value = '';
+            document.getElementById('tgUser').value = '';
+
+            document.getElementById('successView').style.display = 'none';
+            document.getElementById('formView').style.display = 'block';
+            document.getElementById('errorMsg').style.display = 'none';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
